@@ -7,8 +7,10 @@ import {
     DELETE,
     DELETE_MANY,
 } from 'react-admin';
+import Produit from './models/Produit';
 
 const apiUrl = 'http://localhost:9090';
+const apiUrlTries = `${apiUrl}/ProduitsTries`;
 
 /**
  * Maps react-admin queries to my REST API
@@ -24,8 +26,7 @@ export default async (type, resource, params) => {
 
     switch (type) {
         case GET_LIST: {
-            url = `${apiUrl}/ProduitsTries`;
-            const { data } = await axios.get(url);
+            const { data } = await axios.get(apiUrlTries);
 
             return { data, total: data && data.length > 0 ? data.length : 0 } ;
         }
@@ -37,36 +38,22 @@ export default async (type, resource, params) => {
         }
 
         case UPDATE: {
-            //url = `${apiUrl}/${resource}/${params.id}`;
-            url = `${apiUrl}/Produits`;
+            url = `${apiUrl}/${resource}`;
 
-            const formData = new FormData();
-            formData.append('cuisine', params.data.cuisine);
-            formData.append('nom', params.data.name);
-
-            await axios.put(url, formData);
+            await axios.put(url, new Produit(params.data));
             return { data: params.data } ;
         }
 
         case CREATE: {
-            //url = `${apiUrl}/${resource}/`;
-            url = `${apiUrl}/Produits`;
+            url = `${apiUrl}/${resource}/`;
 
-            const formData = new FormData();
-            formData.append('cuisine', params.data.cuisine);
-            formData.append('nom', params.data.name);
-
-            const { data: { result } } = await axios.post(url, formData);
-            const data = {
-                ...params.data,
-                id: result,
-            };
+            await axios.post(url, new Produit(params.data));
+            const data = {...params.data, id: null};
             return { data } ;
         }
 
         case DELETE: {
-            //url = `${apiUrl}/${resource}/${params.id}`;
-            url = `${apiUrl}/Produits/${params.id}`;
+            url = `${apiUrl}/${resource}/${params.id}`;
 
             await axios.delete(url);
             return { data: null } ;
@@ -74,9 +61,10 @@ export default async (type, resource, params) => {
 
         case DELETE_MANY:
             params.ids && params.ids.length > 0 && params.ids.forEach(id => {
-                url = `${apiUrl}/Produits/${params.id}`;
+                url = `${apiUrl}/Produits/${id}`;
                 axios.delete(url);
             });
+            await axios.get(apiUrlTries);
             return { data: [] } ;
 
         default:
