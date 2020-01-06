@@ -10,6 +10,7 @@ import { Layout } from './layout';
 import customRoutes from './routes';
 import englishMessages from './i18n/en';
 import dataProvider from './dataProvider';
+import authProvider from './authProvider';
 
 const i18nProvider = locale => {
     if (locale === 'fr') {
@@ -36,6 +37,7 @@ export default class App extends Component {
             <Admin
                 title=""
                 dataProvider={dataProvider}
+                authProvider={authProvider}
                 customReducers={{ theme: themeReducer }}
                 customRoutes={customRoutes}
                 appLayout={Layout}

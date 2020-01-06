@@ -1,4 +1,4 @@
-import axios from 'axios';
+import fetching from './fetching';
 import {
     GET_LIST,
     GET_ONE,
@@ -26,28 +26,28 @@ export default async (type, resource, params) => {
 
     switch (type) {
         case GET_LIST: {
-            const { data } = await axios.get(apiUrlTries);
+            const { data } = await fetching.get(apiUrlTries);
 
             return { data, total: data && data.length > 0 ? data.length : 0 } ;
         }
 
         case GET_ONE: {
             url = `${apiUrl}/${resource}/${params.id}`;
-            const { data } = await axios.get(url);
+            const { data } = await fetching.get(url);
             return { data } ;
         }
 
         case UPDATE: {
             url = `${apiUrl}/${resource}`;
 
-            await axios.put(url, new Produit(params.data));
+            await fetching.put(url, new Produit(params.data));
             return { data: params.data } ;
         }
 
         case CREATE: {
             url = `${apiUrl}/${resource}/`;
 
-            await axios.post(url, new Produit(params.data));
+            await fetching.post(url, new Produit(params.data));
             const data = {...params.data, id: null};
             return { data } ;
         }
@@ -55,16 +55,16 @@ export default async (type, resource, params) => {
         case DELETE: {
             url = `${apiUrl}/${resource}/${params.id}`;
 
-            await axios.delete(url);
+            await fetching.delete(url);
             return { data: null } ;
         }
 
         case DELETE_MANY:
             params.ids && params.ids.length > 0 && params.ids.forEach(id => {
                 url = `${apiUrl}/Produits/${id}`;
-                axios.delete(url);
+                fetching.delete(url);
             });
-            await axios.get(apiUrlTries);
+            await fetching.get(apiUrlTries);
             return { data: [] } ;
 
         default:
