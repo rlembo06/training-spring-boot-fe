@@ -1,5 +1,4 @@
 import axios from 'axios';
-import decodeJwt from 'jwt-decode';
 import { AUTH_GET_PERMISSIONS, AUTH_LOGIN, AUTH_LOGOUT, AUTH_CHECK } from 'react-admin';
 
 const apiUrl = 'http://localhost:9090';
@@ -19,21 +18,18 @@ export default async (type, payload) => {
     switch (type) {
         case AUTH_LOGIN: {
             const response = await axios.post(apiAuth, payload);
-            console.log('AUTH_LOGIN', response)
             if (response.status < 200 || response.status >= 300) {
                 throw new Error(response.statusText);
             }
             if (response && response.data) {
                 const { token } = response.data;
-                const decodedToken = decodeJwt(token);
                 localStorage.setItem('token', token);
-                localStorage.setItem('permissions', decodedToken.permissions);
             }
         }
 
         case AUTH_GET_PERMISSIONS: {
-            const role = localStorage.getItem('permissions');
-            return role ? Promise.resolve(role) : Promise.reject();
+            const token = localStorage.getItem('token');
+            return token ? Promise.resolve(token) : Promise.reject();
         }
 
         case AUTH_LOGOUT: {

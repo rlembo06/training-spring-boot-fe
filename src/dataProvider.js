@@ -1,4 +1,5 @@
 import fetching from './fetching';
+import axios from 'axios'
 import {
     GET_LIST,
     GET_ONE,
